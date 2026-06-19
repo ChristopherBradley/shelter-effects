@@ -1,5 +1,9 @@
 .env
 data/
+# NDA: never commit sensitive data (redundant with data/ but explicit for safety)
+data/sensitive_data/
+**/sensitive_data/
+*.gpkg
 __pycache__/
 *.pyc
 .venv/
