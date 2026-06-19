@@ -1,0 +1,5 @@
+# Core POC: imagery download + perspective crops + species ID + triangulation.
+# These all have Python 3.14 wheels.
+requests>=2.31
+numpy>=1.26
+pillow>=10.0

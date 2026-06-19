@@ -1,0 +1,86 @@
+# veg_species_mapper — proof of concept
+
+Test whether **cheap street-level imagery can auto-generate species labels to train
+satellite (Sentinel-2) species maps**, before investing in the full method.
+
+## Pipeline
+
+```
+Mapillary 360 panorama (+ GPS & compass pose)
+  → perspective crops (sweep around the pano)
+  → Pl@ntNet auto species ID per crop
+  → triangulate the plant's ground location from two panos
+  → Sentinel-2 reflectance signature at that point  (training label)
+```
+
+Repeat over many points → a labelled dataset → train a classifier → predict
+wall-to-wall. This repo proves the **two hard parts** (imagery + auto-label) plus
+triangulation. Model training is deliberately out of scope until those work.
+
+## Why these tools (and not the ones in the original idea)
+
+- **Mapillary, not Google Street View.** Google's ToS forbids downloading/storing
+  its imagery and using it to derive data or train models — fatal for a publishable
+  method. Mapillary is openly licensed, has a real API, and returns camera **pose**
+  (compass angle), which triangulation needs.
+- **Pl@ntNet, not Google Lens / iNaturalist.** Lens has no public API; iNaturalist's
+  vision model isn't exposed for bulk use. Pl@ntNet has a free-tier REST API.
+- **No Pannellum/Pannotator.** That's a manual annotation viewer. For an *automated*
+  pipeline we crop perspective views in code and POST them to the ID API.
+
+## Setup
+
+```bash
+conda env create -f environment.yml
+conda activate veg_species_mapper
+cp .env.example .env      # then paste your two API keys in
+```
+
+(`environment.yml` pins Python 3.12 — `rasterio` has no 3.14 wheels yet — and pulls
+GDAL/PROJ cleanly from conda-forge. A pip-only path also exists via
+`requirements.txt` + `requirements-sentinel.txt` if you'd rather not use conda.)
+
+Get keys (both free):
+- Mapillary token → https://www.mapillary.com/dashboard/developers
+- Pl@ntNet API key → https://my.plantnet.org/
+
+## Run
+
+With the env active (`conda activate veg_species_mapper`):
+
+```bash
+# National Arboretum Canberra (Pinus radiata is plausible here)
+python scripts/run_poc.py --lat -35.2885 --lon 149.0742 --species "Pinus radiata"
+
+# African lovegrass weed mapping (genus match is more forgiving)
+python scripts/run_poc.py --lat <lat> --lon <lon> --species "Eragrostis" --radius 40
+
+# also pull the satellite signature (needs requirements-sentinel.txt)
+python scripts/run_poc.py --lat -35.2885 --lon 149.0742 --sentinel
+```
+
+First check a spot actually has Mapillary 360 coverage: https://www.mapillary.com/app/
+
+## Known limitations of this POC (important for the writeup)
+
+- **Bearing accuracy is coarse.** We infer direction-to-plant from which sweep crop
+  the species appears in (e.g. ±15° at 12 views). Fine for ~tens-of-metres fixes;
+  a real method would use object detection bounding-box centroids for the bearing.
+- **No cross-image correspondence.** We assume the two panos saw the *same* plant.
+  `Fix.ok=False` (diverging rays) is the signal that they didn't.
+- **Detection range.** Pl@ntNet expects clear plant photos; roadside trees (Radiata
+  Pine) will work far better than fine-textured groundcover (lovegrass) at distance.
+- **Sentinel pixel mixing.** A 10 m Sentinel pixel may mix the target plant with its
+  surroundings — a real concern for the labelling quality, worth measuring early.
+
+## Layout
+
+```
+src/veg_species_mapper/
+  mapillary.py    # find + download 360 imagery with pose
+  panorama.py     # equirectangular -> perspective crops
+  species_id.py   # Pl@ntNet API wrapper
+  triangulate.py  # two bearings -> ground coordinate
+  sentinel.py     # Sentinel-2 signature via Planetary Computer (optional deps)
+scripts/run_poc.py  # end-to-end demo
+```

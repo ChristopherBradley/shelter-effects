@@ -1,0 +1,6 @@
+# Optional: Sentinel-2 fetch step (heavier, geospatial). Install only when you
+# run scripts/run_poc.py --sentinel. May need a slightly older Python if 3.14
+# wheels aren't published yet for rasterio.
+pystac-client>=0.7
+planetary-computer>=1.0
+rasterio>=1.3
