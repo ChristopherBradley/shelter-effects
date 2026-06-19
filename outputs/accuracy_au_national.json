@@ -1,0 +1,173 @@
+{
+  "time": "2026-06-19T16:41:24+00:00",
+  "tag": "au_national",
+  "model": "hgb",
+  "indices": true,
+  "conf": 0.7,
+  "train_regions": [
+    "Temora_NSW",
+    "Wimmera_VIC",
+    "Corowa_NSW",
+    "Merredin_WA",
+    "Clare_SA"
+  ],
+  "unseen_regions": [
+    "Ardlethan_NSW",
+    "Kojonup_WA"
+  ],
+  "unseen_per_region": {
+    "Ardlethan_NSW": 0.7311,
+    "Kojonup_WA": 0.727
+  },
+  "n_train": 69666,
+  "spatial_OA": 0.8423,
+  "spatial_kappa": 0.7097,
+  "unseen_OA": 0.729,
+  "unseen_kappa": 0.3556,
+  "seconds": 8038.5,
+  "label_composition": {
+    "Winter cereals": 20000,
+    "Canola/Oilseeds": 12000,
+    "Grazing native veg": 20000,
+    "Legumes/Pulses": 5700,
+    "Hay": 7006,
+    "Pasture (modified)": 960,
+    "Horticulture": 4000
+  },
+  "spatial_full": {
+    "n_test": 300000,
+    "overall_accuracy": 0.84228,
+    "kappa": 0.7096567610959756,
+    "labels": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8
+    ],
+    "confusion_matrix": [
+      [
+        149351,
+        1427,
+        400,
+        118,
+        18118,
+        208,
+        213
+      ],
+      [
+        1271,
+        3585,
+        1,
+        0,
+        831,
+        27,
+        179
+      ],
+      [
+        9,
+        0,
+        424,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        15166,
+        2538,
+        222,
+        130,
+        91616,
+        1369,
+        1804
+      ],
+      [
+        6,
+        0,
+        1,
+        0,
+        167,
+        395,
+        1
+      ],
+      [
+        246,
+        509,
+        0,
+        0,
+        2354,
+        1,
+        7310
+      ]
+    ],
+    "report": {
+      "1": {
+        "precision": 0.8994393221278056,
+        "recall": 0.8793888185591898,
+        "f1-score": 0.8893010682259351,
+        "support": 169835.0
+      },
+      "2": {
+        "precision": 0.44484427348306244,
+        "recall": 0.6082456735663386,
+        "f1-score": 0.5138679853794883,
+        "support": 5894.0
+      },
+      "3": {
+        "precision": 0.40458015267175573,
+        "recall": 0.9792147806004619,
+        "f1-score": 0.5725860904794058,
+        "support": 433.0
+      },
+      "4": {
+        "precision": 0.01195219123505976,
+        "recall": 1.0,
+        "f1-score": 0.023622047244094488,
+        "support": 3.0
+      },
+      "5": {
+        "precision": 0.8101444918026989,
+        "recall": 0.8118746953786167,
+        "f1-score": 0.8110086707888692,
+        "support": 112845.0
+      },
+      "6": {
+        "precision": 0.1975,
+        "recall": 0.6929824561403509,
+        "f1-score": 0.30739299610894943,
+        "support": 570.0
+      },
+      "8": {
+        "precision": 0.7689071210686862,
+        "recall": 0.7015355086372361,
+        "f1-score": 0.7336779244241481,
+        "support": 10420.0
+      },
+      "accuracy": 0.84228,
+      "macro avg": {
+        "precision": 0.5053382217698669,
+        "recall": 0.8104631332688849,
+        "f1-score": 0.55020811180727,
+        "support": 300000.0
+      },
+      "weighted avg": {
+        "precision": 0.8503291695439229,
+        "recall": 0.84228,
+        "f1-score": 0.8454986563558312,
+        "support": 300000.0
+      }
+    }
+  }
+}
