@@ -47,7 +47,7 @@ def _align_columns(X, bands, want_bands):
     return X[:, cols]
 
 
-def predict_aoi(bundle, bbox, out_prefix, write_confidence=True):
+def predict_aoi(bundle, bbox, out_prefix, write_confidence=True, smooth=0):
     """Apply a saved model bundle to an AOI; write class + confidence GeoTIFFs and a PNG.
     Returns (prediction_2d, confidence_2d, cube)."""
     meta = bundle["meta"]
@@ -70,4 +70,9 @@ def predict_aoi(bundle, bbox, out_prefix, write_confidence=True):
     present = sorted({v for v in np.unique(pred).tolist() if v != 255})
     io_geo.save_class_map_png(pred, present, f"Predicted crops — {out_prefix.name}",
                               f"{out_prefix}_prediction.png", classes=classes)
+    if smooth and smooth >= 3:
+        pred_s = model.majority_filter(pred, size=smooth)
+        io_geo.write_class_geotiff(pred_s, cube, f"{out_prefix}_prediction_smooth.tif", classes=classes)
+        io_geo.save_class_map_png(pred_s, present, f"Predicted (smoothed {smooth}px) — {out_prefix.name}",
+                                  f"{out_prefix}_prediction_smooth.png", classes=classes)
     return pred, proba, cube

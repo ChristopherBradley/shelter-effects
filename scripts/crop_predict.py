@@ -29,6 +29,7 @@ def main():
                     metavar=("MINLON", "MINLAT", "MAXLON", "MAXLAT"))
     ap.add_argument("--name", default="aoi")
     ap.add_argument("--no-confidence", action="store_true")
+    ap.add_argument("--smooth", type=int, default=5, help="majority-filter window px (0=off)")
     args = ap.parse_args()
 
     bundle = pipeline.load_model(args.model)
@@ -38,7 +39,7 @@ def main():
     print(f"Predicting AOI {tuple(args.bbox)} -> {args.name}")
     pred, proba, _ = pipeline.predict_aoi(
         bundle, tuple(args.bbox), OUT / f"predict_{args.name}",
-        write_confidence=not args.no_confidence)
+        write_confidence=not args.no_confidence, smooth=args.smooth)
     import numpy as np
     from veg_species_mapper.cropmap.legend_au import NAME_BY_ID
     vals, counts = np.unique(pred[pred != 255], return_counts=True)

@@ -46,6 +46,23 @@ def valid_mask(X: np.ndarray) -> np.ndarray:
     return np.isfinite(X).all(axis=1)
 
 
+def majority_filter(labels: np.ndarray, size: int = 5, nodata: int = 255) -> np.ndarray:
+    """Modal (majority) smoothing of a categorical label raster — cleans within-field
+    salt-and-pepper from per-pixel classification. Vectorised: per class, count
+    neighbours in a size×size window, take the per-pixel argmax count."""
+    from scipy.ndimage import uniform_filter
+    present = [c for c in np.unique(labels) if c != nodata]
+    best_cnt = np.full(labels.shape, -1.0, dtype="float32")
+    best_cls = np.full(labels.shape, nodata, dtype="uint8")
+    for c in present:
+        cnt = uniform_filter((labels == c).astype("float32"), size=size, mode="nearest")
+        upd = cnt > best_cnt
+        best_cls[upd] = c
+        best_cnt[upd] = cnt[upd]
+    best_cls[labels == nodata] = nodata
+    return best_cls
+
+
 def finite_and_fill(X: np.ndarray):
     """Robust alternative to valid_mask for national scale: keep any pixel with at
     least one finite feature (e.g. a cloudy month leaves some bands NaN), and fill the
