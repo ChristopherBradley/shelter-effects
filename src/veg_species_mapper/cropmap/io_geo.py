@@ -29,7 +29,7 @@ def write_class_geotiff(arr2d, like, path, classes=CLASSES_US):
     da = xr.DataArray(arr2d.astype("uint8"), coords={"y": like.y, "x": like.x},
                       dims=("y", "x")).rio.write_crs(like.rio.crs)
     da.rio.write_nodata(255, inplace=True)
-    da.rio.to_raster(path, dtype="uint8")
+    da.rio.to_raster(path, dtype="uint8", compress="deflate", tiled=True)
     import rasterio
     with rasterio.open(path, "r+") as ds:
         ds.write_colormap(1, _colormap(classes))
@@ -41,7 +41,7 @@ def write_float_geotiff(arr2d, like, path):
     path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
     da = xr.DataArray(arr2d.astype("float32"), coords={"y": like.y, "x": like.x},
                       dims=("y", "x")).rio.write_crs(like.rio.crs)
-    da.rio.to_raster(path, dtype="float32")
+    da.rio.to_raster(path, dtype="float32", compress="deflate", tiled=True)
     return path
 
 

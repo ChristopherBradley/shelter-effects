@@ -42,8 +42,19 @@ def to_feature_matrix(cube: xr.DataArray):
 
 
 def valid_mask(X: np.ndarray) -> np.ndarray:
-    """Pixels with finite features in all bands."""
+    """Pixels with finite features in all bands (strict)."""
     return np.isfinite(X).all(axis=1)
+
+
+def finite_and_fill(X: np.ndarray):
+    """Robust alternative to valid_mask for national scale: keep any pixel with at
+    least one finite feature (e.g. a cloudy month leaves some bands NaN), and fill the
+    remaining NaN/inf with 0 in place. Tree models tolerate the 0-fill, and the same
+    fill is applied at train and predict time, so it stays consistent.
+    Returns (X_filled, valid_mask)."""
+    finite = np.isfinite(X).any(axis=1)
+    np.nan_to_num(X, copy=False, nan=0.0, posinf=0.0, neginf=0.0)
+    return X, finite
 
 
 def spatial_block_split(shape, block_px: int = 50, test_frac: float = 0.3, seed: int = 0):

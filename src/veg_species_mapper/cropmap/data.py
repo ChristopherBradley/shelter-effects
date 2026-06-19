@@ -47,6 +47,7 @@ def s2_monthly_composite(
     months: tuple[int, ...] = (5, 6, 7, 8, 9),
     resolution: int = 10,
     max_cloud: int = 40,
+    max_per_month: int = 5,
     use_cache: bool = True,
 ) -> xr.DataArray:
     """Return a DataArray (band, y, x) where band = '<B>_m<MM>' monthly medians,
@@ -76,7 +77,19 @@ def s2_monthly_composite(
     )
     if not items:
         raise RuntimeError("no Sentinel-2 scenes for AOI/period")
-    print(f"    loading {len(items)} S2 scenes -> EPSG:{epsg} @ {resolution} m ...")
+
+    # Keep only the least-cloudy `max_per_month` scenes per calendar month. Median
+    # compositing needs a few clear looks, not every scene -> far less to download.
+    by_month: dict[str, list] = {}
+    for it in items:
+        by_month.setdefault(it.properties["datetime"][:7], []).append(it)
+    kept = []
+    for m, its in by_month.items():
+        its.sort(key=lambda x: x.properties.get("eo:cloud_cover", 100))
+        kept.extend(its[:max_per_month])
+    items = kept
+    print(f"    loading {len(items)} S2 scenes (<= {max_per_month}/month) "
+          f"-> EPSG:{epsg} @ {resolution} m ...")
 
     ds = odc_load(
         items,
