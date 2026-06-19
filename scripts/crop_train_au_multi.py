@@ -45,11 +45,13 @@ UNSEEN_REGIONS = {"Ardlethan_E": (147.45, -34.50, 147.62, -34.35)}
 
 # National preset: spread across WA / SA / Vic / NSW for cross-continent generalization.
 NATIONAL_TRAIN = {
-    "Temora_NSW":   (147.25, -34.50, 147.42, -34.35),
-    "Wimmera_VIC":  (142.30, -36.55, 142.47, -36.40),
-    "Corowa_NSW":   (146.75, -35.95, 146.92, -35.80),
-    "Merredin_WA":  (118.20, -31.55, 118.37, -31.40),
-    "Clare_SA":     (138.55, -33.85, 138.72, -33.70),
+    "Temora_NSW":      (147.25, -34.50, 147.42, -34.35),
+    "Wimmera_VIC":     (142.30, -36.55, 142.47, -36.40),
+    "Corowa_NSW":      (146.75, -35.95, 146.92, -35.80),
+    "Merredin_WA":     (118.20, -31.55, 118.37, -31.40),
+    "Clare_SA":        (138.55, -33.85, 138.72, -33.70),
+    "Cootamundra_NSW": (148.00, -34.70, 148.17, -34.55),
+    "Mallee_VIC":      (142.40, -35.30, 142.57, -35.15),
 }
 NATIONAL_UNSEEN = {
     "Ardlethan_NSW": (147.45, -34.50, 147.62, -34.35),
