@@ -116,6 +116,7 @@ def main():
     X, sh, bands = model.to_feature_matrix(cube)
     X, finite = model.finite_and_fill(X)
     y = lab_on_s2.values.ravel().astype("uint8")
+    y[y > 4] = 0  # reproject fill/nodata -> treat as non-tree (excluded from training)
     elig = finite & (y != 0)
     is_test = model.spatial_block_split(sh, block_px=40, test_frac=0.3)
     tr_idx = model.sample_training(y, is_test, elig, n_per_class=args.n_per_class, drop_classes=(0,))

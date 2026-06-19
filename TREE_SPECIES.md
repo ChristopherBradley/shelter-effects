@@ -29,6 +29,22 @@ composite, so deciduous leaf-off separates exotics from evergreens) runs with
    the cleaner design is: eucalypt labels from a native forest-type map, pine from the
    plantation layer — both in rural settings.
 
+## Result (first run, Stromlo/Weston AOI, full-year 2021 S2)
+
+HistGradientBoosting on a 12-month composite → **spatial-holdout OA 0.663 (κ 0.34)**
+across eucalypt / conifer / deciduous-exotic / casuarina. Modest, as expected: labels
+are sparse urban pixels (mixed with road/roof), classes are imbalanced, and conifer had
+only ~224 label pixels. The strongest signal is **deciduous-exotic vs evergreen** (the
+full-year phenology earns its keep); eucalypt-vs-casuarina (both evergreen native) is the
+hard split. Outputs: `tree_act_prediction.tif`, `tree_act_confusion.png`,
+model `outputs/models/tree_act.joblib`.
+
+**Important — this is a "species-given-tree" classifier.** It has no non-tree class, so it
+labels *every* pixel (grass/road included). Use it **masked to a tree-cover layer** — e.g.
+your binary tree / shelterbelt map — which is exactly the intended workflow (attributing
+species to already-identified shelterbelts). Unmasked, the map only means "what tree type
+*if* this is tree".
+
 ## Recommended next step (when PC is up)
 - Run the full model on this AOI to get a baseline, then iterate the AOI/label sources
   toward rural eucalypt-woodland + plantation pine for a shelterbelt-relevant model.
