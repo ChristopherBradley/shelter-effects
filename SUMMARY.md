@@ -11,9 +11,15 @@ US sanity check. No street-level imagery / manual labelling needed.
 
 | Model | Train regions | Classes | Pooled spatial OA | Held-out region OA |
 |---|---|---|---|---|
-| `au_national.joblib` | NSW + VIC + WA + SA (5 areas) | 7 | **0.842** (κ 0.71) | Ardlethan NSW 0.73, **Kojonup WA 0.73** |
+| **`au_national_v2.joblib`** ⭐ recommended | 7 areas (NSW/VIC/WA/SA) | 7 | 0.831 | **Ardlethan NSW 0.74, Kojonup WA 0.73** (best generalist) |
+| `au_national.joblib` | 5 areas (NSW/VIC/WA/SA) | 7 | 0.842 (κ 0.71) | Ardlethan 0.73, Kojonup WA 0.73 |
 | `au_multi.joblib` | Temora + Wimmera + Corowa | 5 | 0.859 (κ 0.73) | Ardlethan 0.72 |
 | (US, CDL) | North Dakota | 9 | 0.88 | 0.85 |
+
+**Use `au_national_v2.joblib`** — it generalizes best to unseen regions and handles more
+classes (hay F1 0.45 vs 0.31). `au_national` has marginally higher *pooled* OA but that
+metric rewards memorizing the training regions; held-out generalization is what matters
+for mapping new areas.
 
 "spatial OA" = accuracy on spatially **held-out blocks** (honest, no leakage). The
 held-out-region numbers are the real generalization test — note the **WA region (Kojonup)
