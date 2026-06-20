@@ -182,6 +182,76 @@ def fig_sample_map(df):
     fig.tight_layout(); fig.savefig(OUT / "07_sample_map.png", dpi=130); plt.close(fig)
 
 
+def fig_yield_curve(df, years):
+    """Distance-decay translated to wheat yield (t/ha) via NVT slope 6.4 t/ha/EVI."""
+    SLOPE = 6.4
+    bins = [0, 25, 50, 75, 100, 150, 200, 300, 400]
+    mids = [(bins[i] + bins[i + 1]) / 2 for i in range(len(bins) - 1)]
+    d = df[df.cover == "crop"].copy()
+    fig, ax = plt.subplots(figsize=(7.5, 5))
+    for y, c in [(DROUGHT, "tab:red"), (WET, "tab:blue")]:
+        if f"evi_{y}" not in d:
+            continue
+        d["dem"] = tile_demean(d, f"evi_{y}")
+        d["db"] = pd.cut(d["dist_tree"], bins, labels=mids)
+        m = d.groupby("db", observed=True)["dem"].mean() * SLOPE
+        ax.plot(mids[:len(m)], m.values, "o-", color=c,
+                label=f"{y} ({'drought' if y == DROUGHT else 'wet'})")
+    ax.axhline(0, color="grey", ls="--")
+    ax.set_xlabel("distance to nearest tree (m)")
+    ax.set_ylabel("Δ wheat yield vs local mean (t/ha)")
+    ax.set_title("Shelter effect in yield units (NVT-calibrated)")
+    ax.legend(); fig.tight_layout()
+    fig.savefig(OUT / "08_yield_curve.png", dpi=130, bbox_inches="tight"); plt.close(fig)
+
+
+def fig_wind_vs_percent(df, years):
+    """Naive binary shelter effect under percent vs wind shelter definition."""
+    if "cls_wind" not in df:
+        return
+    rows = []
+    for cover in ["crop", "pasture"]:
+        ids = ([1, 2] if cover == "crop" else [3, 4])
+        for y in years:
+            d = df[df.cover == cover]
+            for meth, col in [("percent", "cls"), ("wind", "cls_wind")]:
+                sh = d[d[col] == ids[1]][f"evi_{y}"].mean()
+                un = d[d[col] == ids[0]][f"evi_{y}"].mean()
+                rows.append((cover, y, meth, sh - un))
+    r = pd.DataFrame(rows, columns=["cover", "year", "method", "delta"])
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5), sharey=True)
+    for ax, cover in zip(axes, ["crop", "pasture"]):
+        rr = r[r.cover == cover].pivot(index="year", columns="method", values="delta")
+        rr.plot(kind="bar", ax=ax); ax.axhline(0, color="k", lw=0.8)
+        ax.set_title(f"{cover.title()}: binary shelter ΔEVI by method")
+    axes[0].set_ylabel("sheltered − unsheltered EVI")
+    fig.suptitle("Shelter definition: percent-cover vs wind (leeward) method", y=1.02)
+    fig.tight_layout(); fig.savefig(OUT / "09_wind_vs_percent.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_benefit_map(df, years):
+    """Spatial map: per-tile peak shelter benefit (ΔEVI 75-200 m vs <40 m), 2021."""
+    if "tile_lon" not in df:
+        return
+    y = WET if f"evi_{WET}" in df else years[0]
+    recs = []
+    for tile, d in df.groupby("tile"):
+        d = d.copy(); d["dem"] = tile_demean(d, f"evi_{y}")
+        near = d[d.dist_tree < 40]["dem"].mean()
+        ben = d[(d.dist_tree >= 75) & (d.dist_tree <= 200)]["dem"].mean()
+        if np.isfinite(near) and np.isfinite(ben):
+            recs.append((d.tile_lon.iloc[0], d.tile_lat.iloc[0], ben - near))
+    r = pd.DataFrame(recs, columns=["lon", "lat", "benefit"])
+    fig, ax = plt.subplots(figsize=(10, 7))
+    sc = ax.scatter(r.lon, r.lat, c=r.benefit, cmap="RdYlGn", vmin=-0.05, vmax=0.12, s=45,
+                    edgecolor="k", linewidth=0.3)
+    ax.set_title(f"Peak shelter benefit by tile (ΔEVI, {y})")
+    ax.set_xlabel("longitude"); ax.set_ylabel("latitude")
+    fig.colorbar(sc, label="peak shelter benefit ΔEVI")
+    fig.tight_layout(); fig.savefig(OUT / "10_benefit_map.png", dpi=130); plt.close(fig)
+
+
 def main():
     df, years = load()
     print(f"loaded {len(df)} samples, {df['tile'].nunique()} tiles, years {years}")
@@ -192,6 +262,9 @@ def main():
     mean_cate = fig_causal_forest(df, years)
     fig_aridity_interaction(df, years)
     fig_sample_map(df)
+    fig_yield_curve(df, years)
+    fig_wind_vs_percent(df, years)
+    fig_benefit_map(df, years)
     print("\nAdjusted shelter effect (ΔEVI):")
     print(res.to_string(index=False))
     print(f"\nMean CATE (drought year, RF T-learner): {mean_cate:+.4f}")
