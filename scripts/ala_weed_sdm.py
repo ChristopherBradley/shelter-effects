@@ -60,13 +60,14 @@ def save_prob_png(prob, path, title):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--q", default="genus:Rubus", help="ALA biocache query")
+    ap.add_argument("--gbif", default="Rubus", help="GBIF taxon name (fallback if ALA down)")
     ap.add_argument("--name", default="blackberry")
     ap.add_argument("--bg", type=int, default=6000, help="background sample count")
     args = ap.parse_args()
     OUT.mkdir(exist_ok=True)
 
-    print(f"[1] ALA presences for '{args.q}' ...")
-    df = ala.fetch_occurrences(args.q, AOI, DATA / f"ala_{args.name}.csv")
+    print(f"[1] presences for '{args.q}' (ALA, GBIF fallback) ...")
+    df = ala.fetch_presences(args.q, args.gbif, AOI, DATA / f"ala_{args.name}.csv")
     print(f"    {len(df)} occurrence points")
 
     print("[2] Sentinel-2 full-year composite ...")

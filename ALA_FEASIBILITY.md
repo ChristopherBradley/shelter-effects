@@ -39,6 +39,22 @@ lovegrass is also viable (3,264 records) and was the original target — and not
 route **sidesteps the street-view/Pl@ntNet dead-end** we found earlier (Pl@ntNet couldn't
 ID lovegrass from imagery).
 
+## Demonstrated proof-of-concept (blackberry)
+
+Built and ran an actual model — `scripts/ala_weed_sdm.py` (`src/.../ala.py`):
+crowd-sourced **presences** (GBIF, which includes ALA records — used because ALA's
+biocache was down) + **background** points, on the full-year Sentinel-2 composite,
+HistGradientBoosting, **spatial-block cross-validation**.
+
+**Result: spatial-CV AUC = 0.74** (227 presence pixels). The probability map
+(`outputs/ala_blackberry_probability.tif/.png`) concentrates along **creeks / riparian
+and disturbed edges** — ecologically where blackberry infests — while the bulk of the
+landscape is correctly low. So the ALA/GBIF → satellite route has **real, above-chance
+signal**. Caveats borne out: average-precision is low (0.10) due to extreme class
+imbalance (few presence vs whole landscape), and the model finds established patches, not
+incipient ones. AUC ~0.74 is a solid starting point to improve with bias correction and
+more presences.
+
 ## How the modelling differs from crops (important)
 
 ALA gives **presence-only** data with strong **sampling bias** (records cluster along

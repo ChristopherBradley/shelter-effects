@@ -1,0 +1,9 @@
+{
+  "q": "genus:Rubus",
+  "n_presence_points": 236,
+  "n_presence_px": 227,
+  "n_background": 6000,
+  "spatial_cv_auc": 0.7443,
+  "avg_precision": 0.1016,
+  "n_features": 156
+}
