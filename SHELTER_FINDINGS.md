@@ -1,5 +1,28 @@
 # Shelter effects on productivity — findings (prototype)
 
+## ⭐ Start here — the 8 outputs worth your time first
+1. **`outputs/shelter/01_distance_decay.png`** — THE headline: the classic shelter curve
+   (competition near trees, benefit mid-field), drought vs wet. Look here first.
+2. **`outputs/shelter/08_yield_curve.png`** — same curve in **t/ha** (NVT-calibrated); the
+   drought line sits above the wet line near the trees.
+3. **`outputs/shelter/12_restrend_beforeafter.png`** — the sobering before/after result:
+   gaining shelter didn't raise yield over 7 yrs. The most important *caveat*.
+4. **`outputs/shelter/11_net_vs_spacing.png`** — practical: net benefit vs belt spacing
+   (crops need >~255 m, pasture >~115 m to be net-positive).
+5. **`outputs/shelter/06_aridity_interaction.png`** — benefit is bigger in *wetter* regions
+   (the non-obvious H3 result).
+6. **`outputs/shelter/05_nvt_yield_calibration.png`** — the EVI→yield link (r≈0.6–0.7) the
+   t/ha numbers rest on.
+7. **`outputs/shelter/10_benefit_map.png`** — where shelter helps most, geographically.
+8. **`outputs/shelter_geotifs/riverina_shelter_benefit.tif`** + `..._evi_drought_anomaly.tif`
+   — open in QGIS over satellite to see the effect on the ground.
+
+(The rest: 02 naive-vs-adjusted, 03 drought-interaction, 04 causal-forest, 07 sample-map,
+09 wind-vs-percent; geotifs for EVI/shelter/distance/climate.)
+
+---
+
+
 Prototype analysis for thesis Goal 2 ("estimating current effects of shelterbelts on
 crop & pasture production during droughts across Australia"). All compute on Earth Engine
 (free, noncommercial); your assets used read-only. Design in `SHELTER_EXPERIMENT.md`.
