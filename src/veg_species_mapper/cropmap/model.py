@@ -25,6 +25,11 @@ def add_indices(cube: xr.DataArray, months) -> xr.DataArray:
         if f"B08_m{m:02d}" in bn and f"B05_m{m:02d}" in bn:
             nir, re = g("B08", m), g("B05", m)
             extra.append((nir - re) / (nir + re + 1e-6)); names.append(f"NDRE_m{m:02d}")
+        # NDYI (yellowness): spikes during canola/oilseed flowering; year-specific so it
+        # tracks rotation rather than assuming a paddock is always the same crop.
+        if f"B03_m{m:02d}" in bn and f"B02_m{m:02d}" in bn:
+            grn, blu = g("B03", m), g("B02", m)
+            extra.append((grn - blu) / (grn + blu + 1e-6)); names.append(f"NDYI_m{m:02d}")
 
     if not extra:
         return cube
