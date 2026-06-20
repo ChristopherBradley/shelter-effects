@@ -78,13 +78,16 @@ def save_confusion_png(cm, labels, path, classes=CLASSES_US,
     import matplotlib.pyplot as plt
     names_map = _names(classes)
     cm = np.array(cm, dtype=float)
-    cmn = cm / (cm.sum(axis=1, keepdims=True) + 1e-9)
+    support = cm.sum(axis=1)               # true-class sample sizes
+    cmn = cm / (support[:, None] + 1e-9)
     names = [names_map.get(l, str(l)) for l in labels]
-    fig, ax = plt.subplots(figsize=(8, 7))
+    ylabels = [f"{n}  (n={int(s)})" for n, s in zip(names, support)]
+    fig, ax = plt.subplots(figsize=(8.5, 7))
     im = ax.imshow(cmn, cmap="viridis", vmin=0, vmax=1)
     ax.set_xticks(range(len(labels))); ax.set_xticklabels(names, rotation=45, ha="right", fontsize=8)
-    ax.set_yticks(range(len(labels))); ax.set_yticklabels(names, fontsize=8)
-    ax.set_xlabel("Predicted"); ax.set_ylabel("True"); ax.set_title(title)
+    ax.set_yticks(range(len(labels))); ax.set_yticklabels(ylabels, fontsize=8)
+    ax.set_xlabel("Predicted"); ax.set_ylabel("True (n = test sample size)")
+    ax.set_title(f"{title}  —  total n={int(support.sum())}")
     for i in range(len(labels)):
         for j in range(len(labels)):
             ax.text(j, i, f"{cmn[i,j]:.2f}", ha="center", va="center",

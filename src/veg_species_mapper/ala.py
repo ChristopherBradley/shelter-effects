@@ -48,12 +48,13 @@ def fetch_occurrences_gbif(name: str, bbox, cache_csv, max_records: int = 8000,
 
 
 def fetch_presences(ala_q: str, gbif_name: str, bbox, cache_csv) -> pd.DataFrame:
-    """Try ALA biocache first; fall back to GBIF if ALA is unavailable."""
+    """GBIF is the primary source (robust infra, aggregates ALA + others); ALA biocache
+    is an optional fallback if GBIF fails."""
     try:
-        return fetch_occurrences(ala_q, bbox, cache_csv)
-    except Exception as e:
-        print(f"    ALA unavailable ({str(e)[:40]}); falling back to GBIF '{gbif_name}'")
         return fetch_occurrences_gbif(gbif_name, bbox, cache_csv)
+    except Exception as e:
+        print(f"    GBIF unavailable ({str(e)[:40]}); trying ALA '{ala_q}'")
+        return fetch_occurrences(ala_q, bbox, cache_csv)
 
 
 def _get_json(params, retries=3):
