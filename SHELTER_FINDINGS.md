@@ -49,6 +49,20 @@ Peak EVI calibrates to NVT site yields with r ≈ 0.6–0.7 (wheat 6.4, barley 6
 So the net paddock effect depends on the **area-weighted balance** of the narrow penalty
 strip vs the broad benefit zone — which favours shelter unless belts are very dense.
 
+## Result 5 — net effect depends on belt spacing (the bottom line) *(plot 11)*
+Area-weighting the yield curve over a paddock of depth D next to a one-sided belt gives
+the *net* effect on the cropped area:
+- **Crop:** net-positive only when paddocks extend beyond **~255 m** from the belt (closer
+  than that, the competition strip outweighs the benefit zone); max area-averaged
+  +0.016 t/ha.
+- **Pasture:** net-positive beyond **~115 m**, max +0.028 t/ha — pasture tolerates/benefits
+  from denser shelter than crops.
+
+Practical implication: shelterbelts pay off on cropped land at **moderate-to-wide
+spacing**; very dense belts can be a net drag on crops via the competition strip, while
+pasture benefits at closer spacing. (First-order estimate, one-sided belt, 2021 curve —
+the next step is true paddock geometry.)
+
 ## Honest caveats
 - Observational: within-tile matching + confounders (soil/terrain/climate) reduce but
   don't remove land-selection bias (trees often left on poorer land). The
