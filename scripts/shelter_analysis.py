@@ -144,6 +144,44 @@ def fig_causal_forest(df, years):
     return float(np.mean(cate))
 
 
+def fig_aridity_interaction(df, years):
+    """H3: per-tile peak shelter benefit (EVI at 75-200 m minus <40 m) vs tile rainfall."""
+    y = WET if f"evi_{WET}" in df else years[0]
+    recs = []
+    for tile, d in df.groupby("tile"):
+        d = d.copy(); d["dem"] = tile_demean(d, f"evi_{y}")
+        near = d[d.dist_tree < 40]["dem"].mean()
+        ben = d[(d.dist_tree >= 75) & (d.dist_tree <= 200)]["dem"].mean()
+        if np.isfinite(near) and np.isfinite(ben):
+            recs.append((d[f"rain_{y}"].mean(), ben - near, d["cover"].iloc[0]))
+    r = pd.DataFrame(recs, columns=["rain", "benefit", "cover"])
+    if len(r) < 8:
+        return
+    fig, ax = plt.subplots(figsize=(7.5, 5))
+    ax.scatter(r.rain, r.benefit, s=12, alpha=0.4, color="grey")
+    r["rb"] = pd.qcut(r.rain, min(6, r.rain.nunique()), duplicates="drop")
+    g = r.groupby("rb", observed=True)["benefit"].agg(["mean", "sem"])
+    ax.errorbar([iv.mid for iv in g.index], g["mean"], yerr=g["sem"], fmt="r-o", capsize=3)
+    ax.axhline(0, color="grey", ls="--")
+    ax.set_xlabel(f"tile growing-season rainfall {y} (mm)")
+    ax.set_ylabel("peak shelter benefit ΔEVI (75-200 m vs <40 m)")
+    ax.set_title("H3: is the shelter benefit larger where it's drier?")
+    fig.tight_layout(); fig.savefig(OUT / "06_aridity_interaction.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_sample_map(df):
+    if "tile_lon" not in df:
+        return
+    fig, ax = plt.subplots(figsize=(9, 7))
+    g = df.groupby(["tile_lon", "tile_lat"]).size().reset_index(name="n")
+    sc = ax.scatter(g.tile_lon, g.tile_lat, s=25, c=g.n, cmap="viridis")
+    ax.set_title(f"Sample tile coverage ({len(g)} tiles, {len(df)} points)")
+    ax.set_xlabel("longitude"); ax.set_ylabel("latitude")
+    fig.colorbar(sc, label="samples per tile")
+    fig.tight_layout(); fig.savefig(OUT / "07_sample_map.png", dpi=130); plt.close(fig)
+
+
 def main():
     df, years = load()
     print(f"loaded {len(df)} samples, {df['tile'].nunique()} tiles, years {years}")
@@ -152,6 +190,8 @@ def main():
     res = fig_naive_vs_adjusted(df, years)
     fig_drought_interaction(res)
     mean_cate = fig_causal_forest(df, years)
+    fig_aridity_interaction(df, years)
+    fig_sample_map(df)
     print("\nAdjusted shelter effect (ΔEVI):")
     print(res.to_string(index=False))
     print(f"\nMean CATE (drought year, RF T-learner): {mean_cate:+.4f}")
