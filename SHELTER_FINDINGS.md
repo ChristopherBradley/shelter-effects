@@ -63,6 +63,29 @@ spacing**; very dense belts can be a net drag on crops via the competition strip
 pasture benefits at closer spacing. (First-order estimate, one-sided belt, 2021 curve —
 the next step is true paddock geometry.)
 
+## Result 6 — before/after (RESTREND) *tempers* the cross-sectional benefit *(plot 12)*
+The strongest causal test here: cropland that **gained** shelter 2017→2024 (moved into the
+80–200 m benefit zone) vs **stable-open** controls, comparing rainfall-adjusted EVI change
+early (2017–18) → late (2023–24). Difference-in-differences:
+**gained +0.180 vs stable +0.192 → DiD = −0.012 EVI (≈ −0.08 t/ha), p<0.0001** (n≈39k).
+
+So *acquiring* nearby trees over this period was associated with **slightly worse**
+relative productivity, not better — the reverse of the cross-section. Plausible reasons,
+all important for the thesis:
+1. **Young-tree competition without shelter yet** — newly-detected trees are small; they
+   compete for water/light before they're tall enough to shelter.
+2. **Reverse causality** — woody regrowth tends to appear on land going *out* of intensive
+   production (retired/degrading paddocks), so "gaining trees" partly marks declining land.
+3. **Cross-sectional benefit is partly selection** — established shelterbelts sit on
+   better-managed farms/soils; the before/after differences out those fixed advantages.
+4. Annual tree-map **classification noise** adds variance (DiD absorbs it as noise, not bias).
+
+**Takeaway:** the mature-shelterbelt benefit is real in the cross-section, but a naive
+"plant trees → immediate yield gain" claim is **not** supported over a 7-year window. The
+honest path is to (a) restrict to *verified new plantings* with known establishment dates,
+(b) model **tree age / height**, and (c) use a longer series so mature shelter is captured —
+which is exactly where your per-year maps + field knowledge add unique value.
+
 ## Honest caveats
 - Observational: within-tile matching + confounders (soil/terrain/climate) reduce but
   don't remove land-selection bias (trees often left on poorer land). The
