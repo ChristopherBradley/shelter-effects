@@ -53,7 +53,7 @@ def main():
             print(f"  {year}: skip ({str(e)[:50]})"); continue
         for f in s["features"]:
             p = f["properties"]
-            ev = p.get(f"evi_{int(year)}_p80") or p.get(f"evi_{int(year)}")
+            ev = p.get("p80")
             if ev is not None:
                 rows.append((int(year), p["crop"], p["yld"], ev))
         print(f"  {int(year)}: {len(sy)} sites sampled")
