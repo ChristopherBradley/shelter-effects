@@ -25,10 +25,34 @@ def add_indices(cube: xr.DataArray, months) -> xr.DataArray:
         if f"B08_m{m:02d}" in bn and f"B05_m{m:02d}" in bn:
             nir, re = g("B08", m), g("B05", m)
             extra.append((nir - re) / (nir + re + 1e-6)); names.append(f"NDRE_m{m:02d}")
-        # NDYI (yellowness): spikes during canola/oilseed flowering; year-specific so it
-        # tracks rotation rather than assuming a paddock is always the same crop.
-        if f"B03_m{m:02d}" in bn and f"B02_m{m:02d}" in bn:
-            grn, blu = g("B03", m), g("B02", m)
+
+    if not extra:
+        return cube
+    add = xr.concat(extra, dim="band").assign_coords(band=names)
+    return xr.concat([cube, add], dim="band")
+
+
+def flowering_index(cube: xr.DataArray, months, kind: str = "ndyi") -> xr.DataArray:
+    """Append a per-month canola-flowering index. Year-specific (tracks rotation).
+      ndyi = (green-blue)/(green+blue)                  -- simple yellowness
+      cfi  = NDVI * (red + 2*green - blue)              -- yellowness x greenness
+             (per paddock-ts; suppresses bare-soil yellow that NDYI flags)
+    """
+    bn = list(cube.band.values)
+    extra, names = [], []
+
+    def g(b, m):
+        return cube.sel(band=f"{b}_m{m:02d}")
+
+    for m in months:
+        need = [f"B0{x}_m{m:02d}" for x in (2, 3, 4)] + [f"B08_m{m:02d}"]
+        if not all(b in bn for b in need):
+            continue
+        blu, grn, red, nir = g("B02", m), g("B03", m), g("B04", m), g("B08", m)
+        if kind == "cfi":
+            ndvi = (nir - red) / (nir + red + 1e-6)
+            extra.append(ndvi * (red + 2 * grn - blu)); names.append(f"CFI_m{m:02d}")
+        else:
             extra.append((grn - blu) / (grn + blu + 1e-6)); names.append(f"NDYI_m{m:02d}")
 
     if not extra:
