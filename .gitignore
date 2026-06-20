@@ -10,3 +10,6 @@ __pycache__/
 venv/
 .conda/
 .DS_Store
+My_reports
+outputs
+Papers
