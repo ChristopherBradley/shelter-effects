@@ -129,6 +129,43 @@ def s2_monthly_composite(
     return cube
 
 
+def flowering_amplitude(bbox, year=2020, months=(7, 8, 9, 10, 11), index="cfi",
+                        max_cloud=60, use_cache=True) -> xr.DataArray:
+    """Per-scene seasonal-MAX flowering amplitude (CFI or NDYI) on the 10 m grid.
+    Computed from individual acquisitions (not composites) so the brief flowering peak
+    survives. Cached. CFI = NDVI*(red+2*green-blue); NDYI=(green-blue)/(green+blue)."""
+    CACHE.mkdir(parents=True, exist_ok=True)
+    key = _aoi_key(bbox, year, months) + index
+    cache_tif = CACHE / f"{index}max_{key}.tif"
+    band_name = f"{index.upper()}_max"
+    if use_cache and cache_tif.exists():
+        da = rioxarray.open_rasterio(cache_tif).squeeze()
+        return da.assign_attrs(long_name=band_name)
+
+    lon_c, lat_c = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
+    epsg = utm_epsg(lon_c, lat_c)
+    cat = _client()
+    items = list(cat.search(collections=["sentinel-2-l2a"], bbox=list(bbox),
+                 datetime=f"{year}-{min(months):02d}-01/{year}-{max(months):02d}-30",
+                 query={"eo:cloud_cover": {"lt": max_cloud}}).items())
+    if not items:
+        raise RuntimeError("no S2 scenes for flowering window")
+    print(f"    flowering {index.upper()}_max: {len(items)} scenes ...")
+    ds = odc_load(items, bands=["B02", "B03", "B04", "B08", "SCL"], bbox=list(bbox),
+                  crs=f"EPSG:{epsg}", resolution=10, groupby="solar_day",
+                  chunks={"x": 2048, "y": 2048}, dtype="uint16", resampling="bilinear")
+    valid = ~ds["SCL"].isin(list(SCL_DROP))
+    b = {k: (ds[k].where(valid) / 10000.0) for k in ["B02", "B03", "B04", "B08"]}
+    if index == "cfi":
+        ndvi = (b["B08"] - b["B04"]) / (b["B08"] + b["B04"] + 1e-6)
+        idx = ndvi * (b["B04"] + 2 * b["B03"] - b["B02"])
+    else:
+        idx = (b["B03"] - b["B02"]) / (b["B03"] + b["B02"] + 1e-6)
+    amp = idx.max("time").astype("float32").compute().rio.write_crs(f"EPSG:{epsg}")
+    amp.rio.to_raster(cache_tif, compress="deflate")
+    return amp.assign_attrs(long_name=band_name)
+
+
 def cdl_labels(
     bbox: tuple[float, float, float, float],
     like: xr.DataArray,
