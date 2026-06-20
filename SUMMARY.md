@@ -1,4 +1,23 @@
-# Overnight crop-mapping run — morning summary
+# Project status — start here
+
+What exists in this repo and where to read about it:
+
+| Theme | Outcome | Doc |
+|---|---|---|
+| **Crop type (AU)** | National model, 0.84 pooled OA, 0.73 on held-out WA region; apply anywhere | `CROP_MAPPING.md` |
+| **Understanding outputs** | How to read every input/output + open GeoTIFFs in QGIS | `OUTPUTS_GUIDE.md` |
+| **Tree species (ACT)** | Eucalypt/conifer/deciduous/casuarina S2 model, 0.66 spatial OA; use masked to tree layer | `TREE_SPECIES.md` |
+| **Weed mapping from ALA/GBIF** | Demonstrated SDMs: blackberry AUC 0.74, serrated tussock AUC 0.83 | `ALA_FEASIBILITY.md` |
+| **Street imagery + plant-ID** | Vegetation-isolation helps framing but roadside trees too distant for Pl@ntNet | `STREET_DETECTION_FINDINGS.md` |
+
+Models in `outputs/models/`: `au_national_v2.joblib` (crops, recommended),
+`tree_act.joblib` (tree species). Apply crops to any AU AOI with `scripts/crop_predict.py`.
+Note: external APIs were intermittently down (Planetary Computer recovered; ALA biocache
+was 503 so weed SDMs used the GBIF fallback — same crowd-sourced data).
+
+---
+
+# Overnight crop-mapping run — summary
 
 ## What works now
 
