@@ -1,0 +1,9 @@
+{
+  "q": "genus:Nassella",
+  "n_presence_points": 167,
+  "n_presence_px": 162,
+  "n_background": 6000,
+  "spatial_cv_auc": 0.8257,
+  "avg_precision": 0.1716,
+  "n_features": 156
+}

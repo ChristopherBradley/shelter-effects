@@ -46,7 +46,10 @@ crowd-sourced **presences** (GBIF, which includes ALA records — used because A
 biocache was down) + **background** points, on the full-year Sentinel-2 composite,
 HistGradientBoosting, **spatial-block cross-validation**.
 
-**Result: spatial-CV AUC = 0.74** (227 presence pixels). The probability map
+**Results: spatial-CV AUC = 0.74 (blackberry), 0.83 (serrated tussock).** Serrated
+tussock scores higher — its distinctive grass swards are more spectrally separable than
+patchy blackberry thickets. (`outputs/ala_serrated_tussock_*`.) Below is the blackberry
+detail; 227 presence pixels. The probability map
 (`outputs/ala_blackberry_probability.tif/.png`) concentrates along **creeks / riparian
 and disturbed edges** — ecologically where blackberry infests — while the bulk of the
 landscape is correctly low. So the ALA/GBIF → satellite route has **real, above-chance
